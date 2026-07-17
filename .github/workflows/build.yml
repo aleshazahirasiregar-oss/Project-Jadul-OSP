@@ -23,7 +23,14 @@ jobs:
         rm -rf /home/runner/.gradle/caches/
         rm -rf app/build/
         ./gradlew --stop
+      
+    # TAMBAHKAN LANGKAH INI DI SINI!
+    - name: Beri izin eksekusi ke gradlew
+      run: chmod +x gradlew
 
+    - name: Build dengan Gradle
+      run: ./gradlew assembleDebug
+      
     # 4. Build dengan Gradle
     - name: Build with Gradle
       run: |
