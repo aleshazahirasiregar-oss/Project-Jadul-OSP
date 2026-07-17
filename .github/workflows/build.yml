@@ -6,41 +6,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    # 1. Checkout v4
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Setup Java v4
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    # 3. Pembersihan Cache (Tetap penting agar tidak ada residu korup)
-    - name: Bersihkan Cache dan Sisa Perang
+    - name: Pembersihan & Persiapan Tempur
       run: |
-        rm -rf /home/runner/.gradle/caches/
-        rm -rf app/build/
-        ./gradlew --stop
-      
-    # TAMBAHKAN LANGKAH INI DI SINI!
-    - name: Beri izin eksekusi ke gradlew
-      run: chmod +x gradlew
+        # Berikan izin eksekusi SEBELUM menjalankan apapun
+        chmod +x ./gradlew
+        # Hentikan gradle dengan paksa jika masih nyangkut
+        ./gradlew --stop || true
+        # Bersihkan cache dengan akses sudo agar tidak terkena permission denied
+        sudo rm -rf /home/runner/.gradle/caches/
+        sudo rm -rf app/build/
 
     - name: Build dengan Gradle
       run: ./gradlew assembleDebug
-      
-    # 4. Build dengan Gradle
-    - name: Build with Gradle
-      run: |
-        chmod +x gradlew
-        ./gradlew assembleDebug
 
-    # 5. Upload Artifact v4
-    - name: Apk Upload
+    - name: Upload hasil build
       uses: actions/upload-artifact@v4
       with:
-        name: app-debug
+        name: Youtube_Go_OSP
         path: app/build/outputs/apk/debug/app-debug.apk
-
+        
