@@ -14,14 +14,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Bypass Wrapper and Build
+      - name: Clean and Build
         run: |
-          # Unduh dan ekstrak Gradle langsung
+          # Download Gradle 8.7
           wget -q https://services.gradle.org/distributions/gradle-8.7-bin.zip
           unzip -q gradle-8.7-bin.zip
           
-          # Gunakan binary Gradle yang baru diunduh untuk build
-          ./gradle-8.7/bin/gradle assembleDebug --no-daemon --parallel
+          # Jalankan clean agar konflik library hilang, lalu build
+          ./gradle-8.7/bin/gradle clean assembleDebug --no-daemon --parallel
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
