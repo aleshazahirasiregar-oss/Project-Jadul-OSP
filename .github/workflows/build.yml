@@ -1,16 +1,9 @@
-name: Build YouTube Go OSP
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+name: Build Android
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Timeout 10 menit agar sistem punya waktu cukup untuk build
-    timeout-minutes: 10 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,20 +14,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Ekstrem Build Force
-        run: |
-          # Pembersihan total sisa file lama
-          rm -rf gradlew gradle/
-          
-          # Paksa sistem buat wrapper baru yang sehat
-          gradle wrapper --gradle-version 8.5 --distribution-type all
-          
-          # Eksekusi build dengan file fresh
-          ./gradlew assembleDebug
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug --no-daemon --parallel
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: YouTubeGo-OSP
+          name: app-debug
           path: app/build/outputs/apk/debug/app-debug.apk
           
