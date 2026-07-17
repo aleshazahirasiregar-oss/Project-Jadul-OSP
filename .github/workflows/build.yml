@@ -14,18 +14,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Reset Gradle Wrapper and Build
+      - name: Bypass Wrapper and Build
         run: |
-          # Bersihkan file wrapper yang rusak
-          rm -rf gradle/wrapper/gradle-wrapper.jar
-          rm -rf gradlew
+          # Unduh dan ekstrak Gradle langsung
+          wget -q https://services.gradle.org/distributions/gradle-8.7-bin.zip
+          unzip -q gradle-8.7-bin.zip
           
-          # Unduh ulang wrapper agar fresh
-          wget https://raw.githubusercontent.com/gradle/gradle/master/gradlew -O gradlew
-          chmod +x gradlew
-          
-          # Eksekusi build
-          ./gradlew assembleDebug --no-daemon --parallel
+          # Gunakan binary Gradle yang baru diunduh untuk build
+          ./gradle-8.7/bin/gradle assembleDebug --no-daemon --parallel
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
