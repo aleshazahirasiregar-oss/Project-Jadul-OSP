@@ -17,28 +17,36 @@ jobs:
 
     - name: Pembersihan & Persiapan Tempur
       run: |
-        # 1. Hapus wrapper yang mungkin korup
-        rm -rf gradle/wrapper/gradle-wrapper.jar
-        # 2. Re-download wrapper secara manual agar bersih
-        curl -L https://services.gradle.org/distributions/gradle-8.7-bin.zip -o gradle-8.7-bin.zip
-        # 3. Beri akses penuh (buka gembok seluruh file)
+        # 1. Pastikan folder wrapper ada
+        mkdir -p gradle/wrapper
+        
+        # 2. Hapus file jar yang rusak
+        rm -f gradle/wrapper/gradle-wrapper.jar
+        
+        # 3. Download Gradle 8.7 baru
+        curl -L https://services.gradle.org/distributions/gradle-8.7-bin.zip -o gradle-8.7.zip
+        unzip -q gradle-8.7.zip
+        
+        # 4. Pindahkan file jar yang benar ke lokasi yang dicari sistem
+        # Jika folder lib gradle-8.7 tidak ada, kita gunakan cara backup
+        cp gradle-8.7/lib/gradle-wrapper-8.7.jar gradle/wrapper/gradle-wrapper.jar || echo "File jar tidak ditemukan, lanjut..."
+        
+        # 5. Beri akses penuh (buka gembok total)
         chmod -R 777 .
-        # 4. Hentikan gradle jika masih aktif
-        ./gradlew --stop || true
-        # 5. Bersihkan cache dengan akses sudo agar tidak terkena lock
-        sudo rm -rf /home/runner/.gradle/caches/
-        sudo rm -rf app/build/
-
-    - name: Build dengan Gradle (Metode Paksa)
-      run: |
-        # Berikan izin eksekusi sekali lagi tepat sebelum perintah dijalankan
         chmod +x ./gradlew
-        # Jalankan melalui shell bash dengan path absolut
-        /usr/bin/bash ./gradlew assembleDebug --no-daemon
+        
+        # 6. Bersihkan cache agar tidak ada sampah lama
+        sudo rm -rf /home/runner/.gradle/caches/
+        rm -rf app/build/
+
+    - name: Build dengan Gradle
+      run: |
+        # Jalankan build dengan hak akses penuh dan tanpa daemon
+        ./gradlew assembleDebug --no-daemon
 
     - name: Upload hasil build
       uses: actions/upload-artifact@v4
       with:
         name: Youtube_Go_OSP
         path: app/build/outputs/apk/debug/app-debug.apk
-         
+        
