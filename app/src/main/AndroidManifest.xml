@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.garudaxyber.youtubego.osp"
-    android:versionCode="1"
-    android:versionName="1.0">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Izin Dasar -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -21,7 +19,8 @@
         android:label="YouTube Go (OSP)"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:supportsRtl="true"
-        android:exported="true">
+        android:exported="true"
+        tools:targetApi="35">
         
         <activity 
             android:name=".MainActivity"
@@ -37,4 +36,3 @@
     </application>
 
 </manifest>
-
