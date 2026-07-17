@@ -14,12 +14,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Find Dependency Conflict
+      - name: Build
         run: |
           wget -q https://services.gradle.org/distributions/gradle-8.7-bin.zip
           unzip -q gradle-8.7-bin.zip
-          # Perintah ini akan menampilkan seluruh pohon dependensi dan error konfliknya secara detail
-          ./gradle-8.7/bin/gradle app:dependencies --stacktrace
+          ./gradle-8.7/bin/gradle clean assembleDebug
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
