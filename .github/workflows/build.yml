@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Timeout 10 menit agar sistem punya waktu cukup untuk build
+    timeout-minutes: 10 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,13 +23,13 @@ jobs:
 
       - name: Ekstrem Build Force
         run: |
-          # Buang semua sisa-sisa file Gradle yang lama (penyebab utama error 126)
+          # Pembersihan total sisa file lama
           rm -rf gradlew gradle/
           
-          # Paksa sistem buat wrapper baru yang fresh dan benar
+          # Paksa sistem buat wrapper baru yang sehat
           gradle wrapper --gradle-version 8.5 --distribution-type all
           
-          # Jalankan build dengan file yang baru dibuat oleh sistem (sudah pasti punya izin eksekusi)
+          # Eksekusi build dengan file fresh
           ./gradlew assembleDebug
 
       - name: Upload APK
