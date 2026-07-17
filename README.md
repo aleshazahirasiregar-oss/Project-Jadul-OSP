@@ -1,6 +1,6 @@
 # Project Jadul OSP
 
-**"support ver Android 4.4 (KitKat) hingga Android 14+, One Device at a Time."**
+**"support ver Android 5.0 (Lolipop) hingga Android 15, One Device at a Time."**
 
 Selamat datang di repository resmi Project Jadul OSP. Proyek ini didedikasikan untuk menyelamatkan perangkat legacy dan low-end agar tetap relevan di dunia digital. Kami mengambil perangkat lunak lawas yang sudah tidak didukung dan mengubahnya menjadi Open Source Project (OSP) yang ringan, efisien, dan fungsional.
 
