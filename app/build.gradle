@@ -1,13 +1,29 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    compileSdkVersion 33
+    // Sesuaikan namespace dengan package utama
+    namespace 'com.garudaxyber.youtubego.osp'
+    compileSdk 35
+
     defaultConfig {
+        // ID aplikasi yang unik di HP
         applicationId "com.garudaxyber.youtubego.osp"
-        minSdkVersion 16
-        targetSdkVersion 33
+        minSdk 21
+        targetSdk 35
         versionCode 1
         versionName "1.0"
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.10.0'
 }
 
