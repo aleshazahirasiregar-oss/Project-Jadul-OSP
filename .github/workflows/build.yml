@@ -14,10 +14,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build with Gradle
+      - name: Grant Permission and Build
         run: |
-             chmod +x gradlew
-              ./gradlew assembleDebug --no-daemon --parallel
+          chmod -R 755 .
+          ./gradlew assembleDebug --no-daemon --parallel
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
