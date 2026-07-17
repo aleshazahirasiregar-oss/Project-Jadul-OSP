@@ -19,10 +19,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Fix and Download Gradle Wrapper
+      - name: Force Fix Permissions
         run: |
+          # Hapus file wrapper yang rusak dari hasil upload manual
+          rm -rf gradle/wrapper/gradle-wrapper.jar
+          # Download ulang versi bersih
           mkdir -p gradle/wrapper
-          wget -O gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.jar
+          wget -q https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.jar -O gradle/wrapper/gradle-wrapper.jar
+          # Kasih izin eksekusi paksa
           chmod +x gradlew
           chmod +x gradle/wrapper/gradle-wrapper.jar
 
