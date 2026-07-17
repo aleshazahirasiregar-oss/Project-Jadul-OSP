@@ -15,30 +15,26 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Pembersihan & Persiapan Tempur
+    - name: Fix Wrapper & Build
       run: |
-        # 1. Bersihkan sisa perang
+        # 1. Hapus semua file wrapper yang rusak/bermasalah
+        rm -rf gradle/wrapper/*
+        
+        # 2. Paksa Gradle membuat ulang wrapper yang sehat
+        # Ini akan menimpa file jar yang error dengan file yang valid
+        gradle wrapper --gradle-version 8.7
+        
+        # 3. Beri akses penuh agar tidak ada lagi "Permission Denied"
+        chmod +x gradlew
+        chmod -R 777 .
+        
+        # 4. Bersihkan sisa-sisa perang
         sudo rm -rf /home/runner/.gradle/caches/
         rm -rf app/build/
         
-        # 2. Cari file .jar asli dari folder gradle (jika ada) atau biarkan sistem mencari
-        # Kita buat direktori wrapper
-        mkdir -p gradle/wrapper
-        
-        # 3. PENGGANTI OTOMATIS: 
-        # Jika file jar tidak ada, kita download langsung file jar-nya dari sumber resmi
-        # Ini jauh lebih pasti daripada unzip zip besar
-        curl -L https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.jar -o gradle/wrapper/gradle-wrapper.jar
-        
-        # 4. Beri akses penuh
-        chmod -R 777 .
-        chmod +x ./gradlew
-
-    - name: Build dengan Gradle
-      run: |
-        # Jalankan build
+        # 5. Eksekusi build tanpa menyentuh jar yang corrupt
         ./gradlew assembleDebug --no-daemon
-        
+
     - name: Upload hasil build
       uses: actions/upload-artifact@v4
       with:
