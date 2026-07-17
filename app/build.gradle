@@ -19,7 +19,6 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    // Tambahan ini sangat penting untuk proyek jadul agar library tidak bentrok
     packagingOptions {
         resources {
             excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE', 'META-INF/LICENSE.txt', 'META-INF/NOTICE', 'META-INF/NOTICE.txt']
@@ -28,7 +27,6 @@ android {
 }
 
 dependencies {
-    // Memastikan versi library kompatibel dengan compileSdk 35
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
 }
