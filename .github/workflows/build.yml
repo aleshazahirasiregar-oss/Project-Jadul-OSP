@@ -1,33 +1,39 @@
-name: Build Android
-on: [push]
+name: Build Android App
+
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    # 1. Checkout v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+    # 2. Setup Java v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
 
-      - name: Build
-        run: |
-          wget -q https://services.gradle.org/distributions/gradle-8.7-bin.zip
-          unzip -q gradle-8.7-bin.zip
-          ./gradle-8.7/bin/gradle clean assembleDebug
-        env:
-          JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
+    # 3. Pembersihan Cache (Tetap penting agar tidak ada residu korup)
+    - name: Bersihkan Cache dan Sisa Perang
+      run: |
+        rm -rf /home/runner/.gradle/caches/
+        rm -rf app/build/
+        ./gradlew --stop
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+    # 4. Build dengan Gradle
+    - name: Build with Gradle
+      run: |
+        chmod +x gradlew
+        ./gradlew assembleDebug
 
+    # 5. Upload Artifact v4
+    - name: Apk Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/app-debug.apk
 
-#Work all day, and then i wake up. Work all day, and then i wake up.
-##Work all day. yeah yeah yeah. ---Oliver--Tree---
