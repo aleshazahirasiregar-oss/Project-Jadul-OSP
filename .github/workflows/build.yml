@@ -14,14 +14,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Clean and Build
+      - name: Force Full Error Log
         run: |
-          # Download Gradle 8.7
           wget -q https://services.gradle.org/distributions/gradle-8.7-bin.zip
           unzip -q gradle-8.7-bin.zip
-          
-          # Jalankan clean agar konflik library hilang, lalu build
-          ./gradle-8.7/bin/gradle clean assembleDebug --no-daemon --parallel
+          # Perintah ini akan memaksa Gradle menampilkan pesan error sedetail mungkin
+          ./gradle-8.7/bin/gradle clean assembleDebug --info --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
