@@ -19,19 +19,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Force Fix Permissions
+      - name: Ekstrem Build Force
         run: |
-          # Hapus file wrapper yang rusak dari hasil upload manual
-          rm -rf gradle/wrapper/gradle-wrapper.jar
-          # Download ulang versi bersih
-          mkdir -p gradle/wrapper
-          wget -q https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.jar -O gradle/wrapper/gradle-wrapper.jar
-          # Kasih izin eksekusi paksa
-          chmod +x gradlew
-          chmod +x gradle/wrapper/gradle-wrapper.jar
-
-      - name: Build with Gradle
-        run: ./gradlew assembleDebug
+          # Buang semua sisa-sisa file Gradle yang lama (penyebab utama error 126)
+          rm -rf gradlew gradle/
+          
+          # Paksa sistem buat wrapper baru yang fresh dan benar
+          gradle wrapper --gradle-version 8.5 --distribution-type all
+          
+          # Jalankan build dengan file yang baru dibuat oleh sistem (sudah pasti punya izin eksekusi)
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
