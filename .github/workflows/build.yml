@@ -14,9 +14,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Grant Permission and Build
+      - name: Reset Gradle Wrapper and Build
         run: |
-          chmod -R 755 .
+          # Bersihkan file wrapper yang rusak
+          rm -rf gradle/wrapper/gradle-wrapper.jar
+          rm -rf gradlew
+          
+          # Unduh ulang wrapper agar fresh
+          wget https://raw.githubusercontent.com/gradle/gradle/master/gradlew -O gradlew
+          chmod +x gradlew
+          
+          # Eksekusi build
           ./gradlew assembleDebug --no-daemon --parallel
 
       - name: Upload APK
