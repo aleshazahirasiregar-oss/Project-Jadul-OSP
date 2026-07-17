@@ -17,20 +17,28 @@ jobs:
 
     - name: Pembersihan & Persiapan Tempur
       run: |
-        # Berikan izin eksekusi SEBELUM menjalankan apapun
-        chmod +x ./gradlew
-        # Hentikan gradle dengan paksa jika masih nyangkut
+        # 1. Hapus wrapper yang mungkin korup
+        rm -rf gradle/wrapper/gradle-wrapper.jar
+        # 2. Re-download wrapper secara manual agar bersih
+        curl -L https://services.gradle.org/distributions/gradle-8.7-bin.zip -o gradle-8.7-bin.zip
+        # 3. Beri akses penuh (buka gembok seluruh file)
+        chmod -R 777 .
+        # 4. Hentikan gradle jika masih aktif
         ./gradlew --stop || true
-        # Bersihkan cache dengan akses sudo agar tidak terkena permission denied
+        # 5. Bersihkan cache dengan akses sudo agar tidak terkena lock
         sudo rm -rf /home/runner/.gradle/caches/
         sudo rm -rf app/build/
 
-    - name: Build dengan Gradle
-      run: ./gradlew assembleDebug
+    - name: Build dengan Gradle (Metode Paksa)
+      run: |
+        # Berikan izin eksekusi sekali lagi tepat sebelum perintah dijalankan
+        chmod +x ./gradlew
+        # Jalankan melalui shell bash dengan path absolut
+        /usr/bin/bash ./gradlew assembleDebug --no-daemon
 
     - name: Upload hasil build
       uses: actions/upload-artifact@v4
       with:
         name: Youtube_Go_OSP
         path: app/build/outputs/apk/debug/app-debug.apk
-        
+         
