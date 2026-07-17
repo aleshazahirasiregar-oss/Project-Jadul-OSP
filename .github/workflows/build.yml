@@ -17,24 +17,28 @@ jobs:
 
     - name: Fix Wrapper & Build
       run: |
-        # 1. Hapus semua file wrapper yang rusak/bermasalah
+        # 1. Hapus wrapper yang rusak
         rm -rf gradle/wrapper/*
         
-        # 2. Paksa Gradle membuat ulang wrapper yang sehat
-        # Ini akan menimpa file jar yang error dengan file yang valid
-        gradle wrapper --gradle-version 8.7
+        # 2. Paksa download dan gunakan wrapper versi 8.7 yang stabil
+        # Kita panggil langsung jar-nya agar sistem tidak mengambil Gradle 9
+        curl -L https://raw.githubusercontent.com/gradle/gradle/v8.7/gradle/wrapper/gradle-wrapper.jar -o gradle/wrapper/gradle-wrapper.jar
         
-        # 3. Beri akses penuh agar tidak ada lagi "Permission Denied"
+        # 3. Buat properti file agar wrapper tahu dia harus pakai versi 8.7
+        echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
+        echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+        echo "distributionUrl=https\://services.gradle.org/gradle-8.7-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
+        echo "networkTimeout=10000" >> gradle/wrapper/gradle-wrapper.properties
+        echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
+        echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+
+        # 4. Beri akses
         chmod +x gradlew
         chmod -R 777 .
         
-        # 4. Bersihkan sisa-sisa perang
-        sudo rm -rf /home/runner/.gradle/caches/
-        rm -rf app/build/
-        
-        # 5. Eksekusi build tanpa menyentuh jar yang corrupt
+        # 5. Build dengan versi 8.7
         ./gradlew assembleDebug --no-daemon
-
+        
     - name: Upload hasil build
       uses: actions/upload-artifact@v4
       with:
