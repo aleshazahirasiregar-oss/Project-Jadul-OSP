@@ -15,30 +15,38 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Fix Wrapper & Build
+    - name: Fix Wrapper & Build (Full Fix)
       run: |
-        # 1. Hapus wrapper yang rusak
+        # 1. Bersihkan lingkungan
         rm -rf gradle/wrapper/*
+        mkdir -p gradle/wrapper
         
-        # 2. Paksa download dan gunakan wrapper versi 8.7 yang stabil
-        # Kita panggil langsung jar-nya agar sistem tidak mengambil Gradle 9
-        curl -L https://raw.githubusercontent.com/gradle/gradle/v8.7/gradle/wrapper/gradle-wrapper.jar -o gradle/wrapper/gradle-wrapper.jar
+        # 2. Download Gradle 8.7 Binary (Pasti ada filenya, bukan 404)
+        curl -L https://services.gradle.org/distributions/gradle-8.7-bin.zip -o gradle-8.7.zip
+        unzip -q gradle-8.7.zip
         
-        # 3. Buat properti file agar wrapper tahu dia harus pakai versi 8.7
+        # 3. Ambil file JAR dari hasil unzip tadi (Tidak akan 404!)
+        cp gradle-8.7/lib/gradle-wrapper-8.7.jar gradle/wrapper/gradle-wrapper.jar
+        
+        # 4. Buat file konfigurasi yang tepat
         echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
         echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
-        echo "distributionUrl=https\://services.gradle.org/gradle-8.7-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
+        echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
         echo "networkTimeout=10000" >> gradle/wrapper/gradle-wrapper.properties
         echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
         echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
-
-        # 4. Beri akses
+        
+        # 5. Pastikan semua file punya izin eksekusi
         chmod +x gradlew
         chmod -R 777 .
         
-        # 5. Build dengan versi 8.7
-        ./gradlew assembleDebug --no-daemon
+        # 6. Bersihkan cache sistem
+        sudo rm -rf /home/runner/.gradle/caches/
+        rm -rf app/build/
         
+        # 7. Eksekusi Build
+        ./gradlew assembleDebug --no-daemon
+
     - name: Upload hasil build
       uses: actions/upload-artifact@v4
       with:
