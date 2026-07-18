@@ -6,29 +6,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    - name: (1) Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up JDK 17
+    - name: (2) Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Fix Wrapper & Build (Full Fix)
+    - name: (3) Fix Wrapper & Build (Radar Mode)
       run: |
-        # 1. Bersihkan lingkungan
+        # 1. Bersihkan lingkungan awal
         rm -rf gradle/wrapper/*
         mkdir -p gradle/wrapper
         
-        # 2. Download Gradle 8.7 Binary (Pasti ada filenya, bukan 404)
+        # 2. Download Gradle 8.7 Binary
         curl -L https://services.gradle.org/distributions/gradle-8.7-bin.zip -o gradle-8.7.zip
         unzip -q gradle-8.7.zip
         
-        # 3. Ambil file JAR dari hasil unzip tadi (Tidak akan 404!)
-        cp gradle-8.7/lib/gradle-wrapper-8.7.jar gradle/wrapper/gradle-wrapper.jar
+        # 3. RADAR PENCARI: Cari file gradle-wrapper*.jar di mana saja di dalam hasil unzip dan salin ke tujuan
+        find gradle-8.7/ -name "gradle-wrapper*.jar" -exec cp {} gradle/wrapper/gradle-wrapper.jar \;
         
-        # 4. Buat file konfigurasi yang tepat
+        # 4. Buat file konfigurasi properti yang pas
         echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
         echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
         echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
@@ -36,18 +36,18 @@ jobs:
         echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
         echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
         
-        # 5. Pastikan semua file punya izin eksekusi
+        # 5. Pastikan hak akses penuh terbuka total
         chmod +x gradlew
         chmod -R 777 .
         
-        # 6. Bersihkan cache sistem
+        # 6. Bersihkan sisa cache
         sudo rm -rf /home/runner/.gradle/caches/
         rm -rf app/build/
         
-        # 7. Eksekusi Build
+        # 7. Hajar Build!
         ./gradlew assembleDebug --no-daemon
 
-    - name: Upload hasil build
+    - name: (4) Upload hasil build
       uses: actions/upload-artifact@v4
       with:
         name: Youtube_Go_OSP
