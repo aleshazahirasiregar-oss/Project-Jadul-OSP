@@ -17,15 +17,17 @@ jobs:
 
     - name: (3) Fix Wrapper & Build (Radar Mode)
       run: |
-        # 1. Bersihkan lingkungan awal
+        # 1. Bersihkan lingkungan awal termasuk gradlew yang rusak
         rm -rf gradle/wrapper/*
+        rm -f gradlew
         mkdir -p gradle/wrapper
         
-        # 2. Download Gradle 8.7 Binary
+        # 2. Download Paket Resmi Gradle 8.7
         curl -L https://services.gradle.org/distributions/gradle-8.7-bin.zip -o gradle-8.7.zip
         unzip -q gradle-8.7.zip
         
-        # 3. RADAR PENCARI: Cari file gradle-wrapper*.jar di mana saja di dalam hasil unzip dan salin ke tujuan
+        # 3. AMBIL REGENERASI: Salin file gradlew dan jar asli yang 100% sehat dari hasil ekstrak
+        cp gradle-8.7/bin/gradlew ./gradlew
         find gradle-8.7/ -name "gradle-wrapper*.jar" -exec cp {} gradle/wrapper/gradle-wrapper.jar \;
         
         # 4. Buat file konfigurasi properti yang pas
@@ -36,7 +38,7 @@ jobs:
         echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
         echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
         
-        # 5. Pastikan hak akses penuh terbuka total
+        # 5. Pastikan hak akses penuh dibuka total untuk gradlew yang baru
         chmod +x gradlew
         chmod -R 777 .
         
@@ -44,7 +46,7 @@ jobs:
         sudo rm -rf /home/runner/.gradle/caches/
         rm -rf app/build/
         
-        # 7. Hajar Build!
+        # 7. Hajar Build dengan script yang baru lahir!
         ./gradlew assembleDebug --no-daemon
 
     - name: (4) Upload hasil build
@@ -52,4 +54,3 @@ jobs:
       with:
         name: Youtube_Go_OSP
         path: app/build/outputs/apk/debug/app-debug.apk
-        
